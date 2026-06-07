@@ -1,0 +1,29 @@
+{
+  "name": "@daily-good-news/db",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "generate": "sst shell drizzle-kit generate",
+    "migrate": "sst shell drizzle-kit migrate",
+    "push": "sst shell drizzle-kit push",
+    "lint": "tsc --noEmit",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1",
+    "drizzle-orm": "^0.45",
+    "sst": "^4"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31",
+    "typescript": "^6",
+    "vitest": "^4.1.8"
+  }
+}

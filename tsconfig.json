@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "noEmit": true
+  },
+  "include": ["sst.config.ts", ".sst/platform/config.d.ts"],
+  "exclude": ["node_modules", "apps", "packages"]
+}

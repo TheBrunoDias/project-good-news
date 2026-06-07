@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/bruno/www/projects/daily-good-news/apps/api/**)",
+      "Read(///wsl.localhost/Ubuntu/home/bruno/www/projects/daily-good-news/apps/api/**)"
+    ]
+  }
+}
