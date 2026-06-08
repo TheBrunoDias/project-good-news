@@ -18,9 +18,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <a href="/" className="font-bold text-base tracking-tight text-ink">
               Daily Good News
             </a>
-            <a href="/about" className="text-xs text-ink-muted hover:text-ink transition-colors">
-              About
-            </a>
+            <nav className="flex items-center gap-4">
+              <a href="/news" className="text-xs text-ink-muted hover:text-ink transition-colors">
+                News
+              </a>
+              <a href="/about" className="text-xs text-ink-muted hover:text-ink transition-colors">
+                About
+              </a>
+            </nav>
           </div>
         </header>
         {children}
