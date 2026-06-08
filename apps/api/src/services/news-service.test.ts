@@ -36,10 +36,6 @@ function makeNewsApiResponse(articles: object[]) {
   return { status: "ok", totalResults: articles.length, articles };
 }
 
-function makeSourcesResponse(sources: Array<{ id: string; name: string }>) {
-  return { status: "ok", sources };
-}
-
 function makeFetchResponse(response: object, ok = true) {
   return {
     ok,
@@ -52,19 +48,6 @@ function makeFetchResponse(response: object, ok = true) {
 function mockFetch(response: object, ok = true) {
   return vi.fn().mockResolvedValue(makeFetchResponse(response, ok));
 }
-
-function mockFetchSequence(...responses: Array<[object, boolean?]>) {
-  const mock = vi.fn();
-  for (const [response, ok = true] of responses) {
-    mock.mockResolvedValueOnce(makeFetchResponse(response, ok));
-  }
-  return mock;
-}
-
-const validSources = [
-  { id: "bbc-news", name: "BBC News" },
-  { id: "cnn", name: "CNN" },
-];
 
 function makeBatchResponse(scores: Array<{ id: number; score: number }>) {
   return { text: JSON.stringify({ noticias: scores }) };
@@ -110,13 +93,7 @@ describe("NewsService", () => {
 
   describe("fetchArticles", () => {
     it("normaliza artigos da NewsAPI para o formato interno", async () => {
-      vi.stubGlobal(
-        "fetch",
-        mockFetchSequence(
-          [makeSourcesResponse(validSources)],
-          [makeNewsApiResponse([validArticle])],
-        ),
-      );
+      vi.stubGlobal("fetch", mockFetch(makeNewsApiResponse([validArticle])));
 
       const articles = await service.fetchArticles();
 
@@ -130,18 +107,24 @@ describe("NewsService", () => {
       expect(articles[0]?.publishedAt).toBeInstanceOf(Date);
     });
 
-    it("envia as fontes como query param sources no endpoint everything", async () => {
-      const fetchMock = mockFetchSequence(
-        [makeSourcesResponse(validSources)],
-        [makeNewsApiResponse([validArticle])],
-      );
+    it("chama o endpoint /v2/top-headlines com pageSize=100", async () => {
+      const fetchMock = mockFetch(makeNewsApiResponse([validArticle]));
       vi.stubGlobal("fetch", fetchMock);
 
       await service.fetchArticles();
 
-      const articlesUrl = fetchMock.mock.calls[1]?.[0] as string;
-      expect(articlesUrl).toContain("/v2/everything");
-      expect(articlesUrl).toContain("sources=bbc-news,cnn");
+      const calledUrl = fetchMock.mock.calls[0]?.[0] as string;
+      expect(calledUrl).toContain("/v2/top-headlines");
+      expect(calledUrl).toContain("pageSize=100");
+    });
+
+    it("faz apenas um request HTTP por chamada", async () => {
+      const fetchMock = mockFetch(makeNewsApiResponse([validArticle]));
+      vi.stubGlobal("fetch", fetchMock);
+
+      await service.fetchArticles();
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
     });
 
     it("filtra artigos sem título ou descrição", async () => {
@@ -150,10 +133,7 @@ describe("NewsService", () => {
 
       vi.stubGlobal(
         "fetch",
-        mockFetchSequence(
-          [makeSourcesResponse(validSources)],
-          [makeNewsApiResponse([withoutTitle, withoutDescription, validArticle])],
-        ),
+        mockFetch(makeNewsApiResponse([withoutTitle, withoutDescription, validArticle])),
       );
 
       const articles = await service.fetchArticles();
@@ -162,32 +142,14 @@ describe("NewsService", () => {
       expect(articles[0]?.url).toBe(validArticle.url);
     });
 
-    it("lança erro quando a chamada de sources falha com erro HTTP", async () => {
+    it("lança erro quando a chamada falha com erro HTTP", async () => {
       vi.stubGlobal("fetch", mockFetch({}, false));
-
-      await expect(service.fetchArticles()).rejects.toThrow("NewsAPI sources error: 500");
-    });
-
-    it("lança erro quando a chamada de artigos falha com erro HTTP", async () => {
-      vi.stubGlobal(
-        "fetch",
-        mockFetchSequence(
-          [makeSourcesResponse(validSources)],
-          [{}, false],
-        ),
-      );
 
       await expect(service.fetchArticles()).rejects.toThrow("NewsAPI error: 500");
     });
 
-    it("lança erro quando o payload de artigos retorna status != ok", async () => {
-      vi.stubGlobal(
-        "fetch",
-        mockFetchSequence(
-          [makeSourcesResponse(validSources)],
-          [{ status: "error", message: "apiKeyInvalid" }],
-        ),
-      );
+    it("lança erro quando o payload retorna status != ok", async () => {
+      vi.stubGlobal("fetch", mockFetch({ status: "error", message: "apiKeyInvalid" }));
 
       await expect(service.fetchArticles()).rejects.toThrow("apiKeyInvalid");
     });

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch src/handler.ts",
-    "dev:local": "sst shell tsx watch src/server.ts",
+    "dev:local": "sst shell --stage dev tsx watch src/server.ts",
     "lint": "tsc --noEmit",
     "type-check": "tsc --noEmit",
     "test": "vitest run"

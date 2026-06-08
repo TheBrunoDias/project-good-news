@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, type GenerateContentResponse } from "@google/genai";
 import { db, news } from "@daily-good-news/db";
 import type { NewsInsert } from "@daily-good-news/db";
 
@@ -7,17 +7,6 @@ import type { NewsInsert } from "@daily-good-news/db";
 interface NewsApiSource {
   id: string | null;
   name: string;
-}
-
-interface NewsApiSourceItem {
-  id: string;
-  name: string;
-}
-
-interface NewsApiSourcesResponse {
-  status: string;
-  message?: string;
-  sources: NewsApiSourceItem[];
 }
 
 interface NewsApiArticle {
@@ -68,30 +57,8 @@ export class NewsService {
     this.genAi = new GoogleGenAI({ apiKey: genAiApiKey });
   }
 
-  private async fetchSources(): Promise<string[]> {
-    const url = `https://newsapi.org/v2/top-headlines/sources?language=en&apiKey=${this.newsApiKey}`;
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`NewsAPI sources error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = (await response.json()) as NewsApiSourcesResponse;
-    if (data.status !== "ok") {
-      throw new Error(`NewsAPI sources returned error status: ${data.message ?? "unknown"}`);
-    }
-
-    return data.sources.slice(0, 20).map((s) => s.id);
-  }
-
   async fetchArticles(): Promise<NormalizedArticle[]> {
-    const sourceIds = await this.fetchSources();
-    if (sourceIds.length === 0) {
-      throw new Error("No sources returned from NewsAPI");
-    }
-
-    const sources = sourceIds.join(",");
-    const url = `https://newsapi.org/v2/everything?sources=${sources}&pageSize=100&apiKey=${this.newsApiKey}&language=en`;
+    const url = `https://newsapi.org/v2/top-headlines?pageSize=100&apiKey=${this.newsApiKey}&language=en`;
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -117,6 +84,24 @@ export class NewsService {
     });
   }
 
+  private async generateWithRetry(prompt: string, retries = 3, delay = 2000): Promise<GenerateContentResponse> {
+    try {
+      return await this.genAi.models.generateContent({
+        model: GEMINI_MODEL,
+        contents: prompt,
+        config: { temperature: 0 },
+      });
+    } catch (error) {
+      const status = (error as { status?: number }).status;
+      if ((status === 503 || status === 429) && retries > 0) {
+        console.warn(`GenAI unavailable (${status}). Retrying in ${delay / 1000}s... (${retries} left)`);
+        await new Promise<void>((resolve) => setTimeout(resolve, delay));
+        return this.generateWithRetry(prompt, retries - 1, delay * 2);
+      }
+      throw error;
+    }
+  }
+
   async evaluateBatch(articles: NormalizedArticle[]): Promise<Map<number, number>> {
     if (articles.length === 0) return new Map();
 
@@ -140,11 +125,7 @@ export class NewsService {
       `ARTICLES:\n${articlesList}`;
 
     try {
-      const response = await this.genAi.models.generateContent({
-        model: GEMINI_MODEL,
-        contents: prompt,
-        config: { temperature: 0 },
-      });
+      const response = await this.generateWithRetry(prompt);
 
       const rawText = (response.text ?? "").trim();
       // Strip markdown code fences if the model wraps the JSON

@@ -6,6 +6,22 @@
 
 declare module "sst" {
   export interface Resource {
+    "DatabaseUrl": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "GeminiApiKey": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "NewsApiKey": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "NewsCollector": {
+      "name": string
+      "type": "sst.aws.Function"
+    }
   }
 }
 
