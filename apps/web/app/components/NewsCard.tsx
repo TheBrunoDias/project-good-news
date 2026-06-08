@@ -1,4 +1,4 @@
-import type { NewsSelect } from "@daily-good-news/db";
+import type { NewsSelect } from "@daily-good-news/db/schema";
 
 interface ScoreBadgeProps {
   score: number;
