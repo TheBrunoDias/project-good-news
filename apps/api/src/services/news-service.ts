@@ -45,7 +45,7 @@ export interface NormalizedArticle {
   publishedAt: Date;
 }
 
-const GEMINI_MODEL = "gemini-3.5-flash";
+const GEMINI_MODEL = "gemini-2.5-flash";
 
 export class NewsService {
   private readonly genAi: GoogleGenAI;
