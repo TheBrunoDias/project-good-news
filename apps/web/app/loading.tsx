@@ -1,16 +1,20 @@
 function CardSkeleton() {
   return (
-    <div className="flex flex-col bg-canvas rounded-lg border border-hairline overflow-hidden animate-pulse">
-      <div className="aspect-[16/9] bg-canvas-soft" />
-      <div className="p-6 flex flex-col gap-3">
-        <div className="h-4 bg-canvas-soft rounded w-full" />
-        <div className="h-4 bg-canvas-soft rounded w-4/5" />
-        <div className="h-3 bg-canvas-soft rounded w-full mt-1" />
-        <div className="h-3 bg-canvas-soft rounded w-3/4" />
-        <div className="flex items-center justify-between pt-2">
-          <div className="h-3 bg-canvas-soft rounded w-20" />
-          <div className="h-5 bg-canvas-soft rounded-full w-16" />
+    <div className="bg-canvas border border-hairline rounded-xl overflow-hidden animate-pulse">
+      <div className="flex items-center gap-3 px-4 py-3">
+        <div className="size-9 rounded-full bg-canvas-soft shrink-0" />
+        <div className="flex-1 flex flex-col gap-1.5">
+          <div className="h-3 bg-canvas-soft rounded w-28" />
+          <div className="h-2.5 bg-canvas-soft rounded w-16" />
         </div>
+        <div className="h-5 bg-canvas-soft rounded-full w-10" />
+      </div>
+      <div className="aspect-square bg-canvas-soft" />
+      <div className="px-4 py-3 flex flex-col gap-2">
+        <div className="h-3.5 bg-canvas-soft rounded w-full" />
+        <div className="h-3.5 bg-canvas-soft rounded w-4/5" />
+        <div className="h-3 bg-canvas-soft rounded w-full mt-0.5" />
+        <div className="h-3 bg-canvas-soft rounded w-3/4" />
       </div>
     </div>
   );
@@ -18,13 +22,9 @@ function CardSkeleton() {
 
 export default function Loading() {
   return (
-    <main className="mx-auto max-w-5xl px-6 py-12">
-      <div className="mb-10">
-        <div className="h-10 bg-canvas-soft rounded w-64 animate-pulse" />
-        <div className="h-4 bg-canvas-soft rounded w-48 mt-3 animate-pulse" />
-      </div>
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 9 }).map((_, i) => (
+    <main className="mx-auto max-w-117.5 px-4 py-6">
+      <div className="flex flex-col gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
           <CardSkeleton key={i} />
         ))}
       </div>

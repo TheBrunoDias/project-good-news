@@ -14,22 +14,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={inter.className}>
       <body className="min-h-screen bg-canvas-soft text-ink antialiased">
         <header className="sticky top-0 z-10 bg-canvas border-b border-hairline">
-          <div className="mx-auto max-w-5xl px-6 flex items-center justify-between h-14">
+          <div className="mx-auto max-w-117.5 px-4 flex items-center justify-between h-12">
             <a href="/" className="font-bold text-base tracking-tight text-ink">
               Daily Good News
             </a>
-            <span className="text-sm text-ink-faint hidden sm:block">
-              Good things happening in the world
-            </span>
+            <a href="/about" className="text-xs text-ink-muted hover:text-ink transition-colors">
+              About
+            </a>
           </div>
         </header>
         {children}
-        <footer className="bg-canvas-soft border-t border-hairline mt-24">
-          <div className="mx-auto max-w-5xl px-6 py-8 flex items-center justify-between">
-            <span className="text-sm font-semibold text-ink-secondary">Daily Good News</span>
-            <span className="text-xs text-ink-faint">
-              Curated daily with AI · Only good news
-            </span>
+        <footer className="border-t border-hairline mt-16">
+          <div className="mx-auto max-w-117.5 px-4 py-6 text-center">
+            <span className="text-xs text-ink-faint">Curated daily with AI · Only good news</span>
           </div>
         </footer>
       </body>
