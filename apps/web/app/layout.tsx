@@ -1,12 +1,22 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import ServiceWorkerRegistrar from "./components/ServiceWorkerRegistrar";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
+
+export const viewport: Viewport = {
+  themeColor: "#16a34a",
+};
 
 export const metadata: Metadata = {
   title: "Daily Good News",
   description: "Curated positive news, every day.",
+  appleWebApp: {
+    capable: true,
+    title: "Daily Good News",
+    statusBarStyle: "default",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -29,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
         {children}
+        <ServiceWorkerRegistrar />
         <footer className="border-t border-hairline mt-16">
           <div className="mx-auto max-w-117.5 px-4 py-6 text-center">
             <span className="text-xs text-ink-faint">Curated daily with AI · Only good news</span>

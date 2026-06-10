@@ -29,7 +29,7 @@ export default $config({
 
     new sst.aws.CronV2("NewsCron", {
       function: collector,
-      schedule: "rate(1 day)",
+      schedule: "cron(0 0,12 * * ? *)",
     });
   },
 });

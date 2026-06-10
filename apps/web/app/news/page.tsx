@@ -1,3 +1,4 @@
+import { cacheLife } from 'next/cache'
 import type { Metadata } from "next";
 import { getLatestNews, getNewsCount } from "@/lib/db";
 import { NewsFeed } from "../components/NewsFeed";
@@ -10,6 +11,9 @@ export const metadata: Metadata = {
 const PAGE_SIZE = 10;
 
 export default async function NewsPage() {
+  'use cache'
+  cacheLife('hours')
+
   const [articles, total] = await Promise.all([
     getLatestNews(PAGE_SIZE, 0),
     getNewsCount(),

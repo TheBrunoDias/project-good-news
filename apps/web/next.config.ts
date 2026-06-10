@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   transpilePackages: ["@daily-good-news/db"],
+  cacheComponents: true
 };
 
 export default nextConfig;
